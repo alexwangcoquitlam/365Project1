@@ -5,8 +5,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.*;
 import java.io.File;
-import java.util.Arrays;
-
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.swing.BorderFactory;
@@ -19,15 +17,13 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 
 public class MyFrameAudio extends JFrame implements ActionListener {
-
-    JPanel panel;
     JButton fileButton;
     JLabel fileLabel, totalSamplesLabel, samplingRateLabel;
     WavePanel wavePanel;
 
     MyFrameAudio() {
         this.setTitle("CMPT 365 Project 1 Question 1");
-        this.setResizable(true);
+        this.setResizable(false);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.getContentPane().setBackground(new Color(0, 26, 51));
 
@@ -47,7 +43,7 @@ public class MyFrameAudio extends JFrame implements ActionListener {
         infoPanel.add(totalSamplesLabel);
         infoPanel.add(samplingRateLabel);
 
-        panel = new JPanel();
+        JPanel panel = new JPanel();
         BoxLayout layout = new BoxLayout(panel, BoxLayout.Y_AXIS);
         panel.setLayout(layout);
         panel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));

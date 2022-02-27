@@ -2,10 +2,8 @@ package Q1;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.*;
-import java.awt.Point;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
-import javax.swing.Painter;
 
 public class WavePanel extends JPanel {
     private int[][] audioValues;
