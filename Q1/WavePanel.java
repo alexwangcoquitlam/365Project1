@@ -1,3 +1,4 @@
+package Q1;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.*;
@@ -35,9 +36,9 @@ public class WavePanel extends JPanel {
                 g.setColor(Color.blue);
                 for (int j = 0; j < audioValues[i].length-1; j++) {
                     int x1 = (int) Math.ceil(j * normalizationFactorX);
-                    int y1 = (int) Math.ceil(audioValues[i][j] * normalizationFactorY + offset + dimensionY/2/channels);
+                    int y1 = (int) Math.ceil(-1*audioValues[i][j] * normalizationFactorY + offset + dimensionY/2/channels);
                     int x2 = (int) Math.ceil((j + 1) * normalizationFactorX);
-                    int y2 = (int) Math.ceil(audioValues[i][j+1] * normalizationFactorY + offset + dimensionY/2/channels);
+                    int y2 = (int) Math.ceil(-1*audioValues[i][j+1] * normalizationFactorY + offset + dimensionY/2/channels);
                     g.drawLine(x1, y1, x2, y2);
                 }
             }
