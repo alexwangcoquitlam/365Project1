@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.awt.*;
 import java.io.File;
+import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -84,7 +85,9 @@ public class MyFrameImage extends JFrame implements ActionListener {
                         fileLabel.setText(fileName);
                         try {
                             BufferedImage img = ImageIO.read(file);
+                            GetRGBArray(img);
                             imgPanel.repaint(img);
+                            
                         } catch (Exception ex) {
                             fileLabel.setText("Error reading .png.");
                             fileLabel.setForeground(Color.RED);
@@ -99,5 +102,22 @@ public class MyFrameImage extends JFrame implements ActionListener {
                 }
             }
         }
+    }
+
+    private int[][] GetRGBArray(BufferedImage image){
+        int w = image.getWidth(), h = image.getHeight();
+        int[][] output = new int[w][h];
+        
+        for(int x = 0; x < w; x++){
+            for(int y = 0; y < h; y++){
+                output[x][y] = image.getRGB(x, y);
+                int R = (output[x][y] >> 16) & 0xff;
+                int G = (output[x][y] >> 8) & 0xff;
+                int B = (output[x][y]) & 0xff;
+                System.out.println("RGB: [" + R + "," + G + "," + B + "]");
+            }
+        }
+
+        return output;
     }
 }
