@@ -8,7 +8,6 @@ import javax.swing.JPanel;
 
 public class ImagePanel extends JPanel{
     private Color[][] colorArray;
-    private int imgW, imgH;
     private int dimensionX, dimensionY;
     int step;
 
@@ -18,8 +17,6 @@ public class ImagePanel extends JPanel{
     }
 
     public void repaint(Color[][] input, int w, int h){
-        imgW = w;
-        imgH = h;
         dimensionX = w;
         dimensionY = h;
         colorArray = input;
@@ -30,8 +27,8 @@ public class ImagePanel extends JPanel{
     @Override
     protected void paintComponent(Graphics g){
         super.paintComponent(g);
-        for(int x = 0; x < imgW; x++){
-            for(int y = 0; y < imgH; y++){
+        for(int x = 0; x < dimensionX; x++){
+            for(int y = 0; y < dimensionY; y++){
                 g.setColor(colorArray[x][y]);
                 g.drawLine(x, y, x, y);
             }

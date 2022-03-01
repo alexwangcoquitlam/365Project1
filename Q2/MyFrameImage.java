@@ -26,6 +26,7 @@ public class MyFrameImage extends JFrame implements ActionListener {
     private JButton fileButton, exitButton, nextButton;
     private JLabel fileLabel;
     private ImagePanel imgPanel;
+    private HistogramPanel histogramPanel;
     private int step = 1;
 
     private BufferedImage img;
@@ -47,6 +48,9 @@ public class MyFrameImage extends JFrame implements ActionListener {
 
         imgPanel = new ImagePanel();
         imgPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+        histogramPanel = new HistogramPanel();
+        histogramPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         controlPanel = new JPanel();
 
@@ -105,10 +109,16 @@ public class MyFrameImage extends JFrame implements ActionListener {
                             img = ImageIO.read(file);
                             rgbArray = GetRGBArray(img);
                             originalColor = MakeColorArray(rgbArray);
+                            int width = img.getWidth(), height = img.getHeight();
+                            int[][] histograms = CreateHistogramArrays();
+
+                            imgPanel.repaint(originalColor, width, height);
+                            histogramPanel.repaint(histograms, width+3, 150);
 
                             panel.add(imgPanel);
+                            panel.add(histogramPanel);
                             panel.add(controlPanel);
-                            imgPanel.repaint(originalColor, img.getWidth(), img.getHeight());
+
                             this.pack();
                         } catch (Exception ex) {
                             fileLabel.setText("Error reading .png.");
@@ -167,6 +177,22 @@ public class MyFrameImage extends JFrame implements ActionListener {
         }
 
         return output;
+    }
+
+    private int[][] CreateHistogramArrays(){
+        int[][] rgbArrays = new int[3][256];
+        Arrays.fill(rgbArrays[0], 0);
+        Arrays.fill(rgbArrays[1], 0);
+        Arrays.fill(rgbArrays[2], 0);
+        for(int x = 0; x < originalColor.length; x++){
+            for(int y = 0; y < originalColor[0].length; y++){
+                rgbArrays[0][originalColor[x][y].getRed()]++;
+                rgbArrays[1][originalColor[x][y].getGreen()]++;
+                rgbArrays[2][originalColor[x][y].getBlue()]++;
+            }
+        }
+
+        return rgbArrays;
     }
 
     private Color[][] MakeDitheredImage(int[][] input) {
