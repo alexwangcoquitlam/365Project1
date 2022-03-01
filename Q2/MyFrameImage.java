@@ -22,15 +22,20 @@ import javax.swing.Timer;
 
 public class MyFrameImage extends JFrame implements ActionListener {
 
-    private JPanel panel;
-    private JButton fileButton;
+    private JPanel panel, controlPanel;
+    private JButton fileButton, exitButton, nextButton;
     private JLabel fileLabel;
     private ImagePanel imgPanel;
+    private int step = 1;
+
+    private BufferedImage img;
+    private int[][] rgbArray;
+    private Color[][] originalColor, ditheredColor;
 
     MyFrameImage() {
         this.setTitle("CMPT 365 Project 1 Question 2");
         this.setResizable(false);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.getContentPane().setBackground(new Color(0, 26, 51));
 
         fileLabel = new JLabel("No File Selected");
@@ -43,6 +48,19 @@ public class MyFrameImage extends JFrame implements ActionListener {
         imgPanel = new ImagePanel();
         imgPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        controlPanel = new JPanel();
+
+        nextButton = new JButton("Next");
+        nextButton.addActionListener(this);
+        nextButton.setAlignmentX(Component.RIGHT_ALIGNMENT);
+
+        exitButton = new JButton("Exit");
+        exitButton.addActionListener(this);
+        exitButton.setAlignmentX(Component.RIGHT_ALIGNMENT);
+
+        controlPanel.add(nextButton);
+        controlPanel.add(exitButton);
+
         panel = new JPanel();
         BoxLayout layout = new BoxLayout(panel, BoxLayout.Y_AXIS);
         panel.setLayout(layout);
@@ -50,7 +68,6 @@ public class MyFrameImage extends JFrame implements ActionListener {
 
         panel.add(fileButton);
         panel.add(fileLabel);
-        panel.add(imgPanel);
 
         this.add(panel, BorderLayout.CENTER);
         this.pack();
@@ -84,10 +101,15 @@ public class MyFrameImage extends JFrame implements ActionListener {
                     } else {
                         fileLabel.setText(fileName);
                         try {
-                            BufferedImage img = ImageIO.read(file);
-                            GetRGBArray(img);
-                            imgPanel.repaint(img);
-                            
+                            step = 1;
+                            img = ImageIO.read(file);
+                            rgbArray = GetRGBArray(img);
+                            originalColor = MakeColorArray(rgbArray);
+
+                            panel.add(imgPanel);
+                            panel.add(controlPanel);
+                            imgPanel.repaint(originalColor, img.getWidth(), img.getHeight());
+                            this.pack();
                         } catch (Exception ex) {
                             fileLabel.setText("Error reading .png.");
                             fileLabel.setForeground(Color.RED);
@@ -102,22 +124,75 @@ public class MyFrameImage extends JFrame implements ActionListener {
                 }
             }
         }
+        if (e.getSource() == nextButton) {
+            if(step == 1){
+                ditheredColor = MakeDitheredImage(rgbArray);
+                imgPanel.repaint(ditheredColor, img.getWidth(), img.getHeight());
+                step = 2;
+            }
+            else if(step == 2){
+                imgPanel.repaint(originalColor, img.getWidth(), img.getHeight());
+                step = 1;
+            }            
+        }
+        if (e.getSource() == exitButton) {
+            this.dispose();
+        }
     }
 
-    private int[][] GetRGBArray(BufferedImage image){
+    private int[][] GetRGBArray(BufferedImage image) {
         int w = image.getWidth(), h = image.getHeight();
         int[][] output = new int[w][h];
-        
-        for(int x = 0; x < w; x++){
-            for(int y = 0; y < h; y++){
+
+        for (int x = 0; x < w; x++) {
+            for (int y = 0; y < h; y++) {
                 output[x][y] = image.getRGB(x, y);
-                int R = (output[x][y] >> 16) & 0xff;
-                int G = (output[x][y] >> 8) & 0xff;
-                int B = (output[x][y]) & 0xff;
-                System.out.println("RGB: [" + R + "," + G + "," + B + "]");
             }
         }
 
         return output;
+    }
+    
+    private Color[][] MakeColorArray(int[][] input){
+        int w = input.length, h = input[0].length;
+        Color[][] output = new Color[w][h];
+
+        for (int x = 0; x < w; x++){
+            for (int y = 0; y < h; y++){
+                int R = (input[x][y] >> 16) & 0xFF;
+                int G = (input[x][y] >> 8) & 0xFF;
+                int B = (input[x][y]) & 0xFF;
+                output[x][y] = new Color(R, G, B);
+            }
+        }
+
+        return output;
+    }
+
+    private Color[][] MakeDitheredImage(int[][] input) {
+        int row = 0, col = 0;
+        int w = input.length, h = input[0].length;
+        int[][] ditherMatrix = {{15, 195, 60, 240},
+                                {135, 75, 180, 120},
+                                {45, 225, 30, 210},
+                                {165, 105, 150, 90}};
+
+        Color[][] output = MakeColorArray(input);
+
+        for(int x = 0; x < w; x++){
+            row = x % 4;
+            for(int y = 0; y < h; y++){
+                col = y % 4;
+                int R = output[x][y].getRed();
+                int G = output[x][y].getGreen();
+                int B = output[x][y].getBlue();
+                output[x][y] = new Color(GetValue(R, ditherMatrix, row, col), GetValue(G, ditherMatrix, row, col), GetValue(B, ditherMatrix, row, col));
+            }
+        }
+        return output;
+    }
+
+    private int GetValue(int n, int[][] ditherMatrix, int row, int col){
+        return (n > ditherMatrix[row][col]) ? 255 : 0;
     }
 }
