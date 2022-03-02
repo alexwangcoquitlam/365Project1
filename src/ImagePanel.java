@@ -1,7 +1,6 @@
 package src;
 
 import javax.swing.BorderFactory;
-import java.awt.image.BufferedImage;
 import java.awt.*;
 import java.awt.Color;
 import java.awt.Dimension;
