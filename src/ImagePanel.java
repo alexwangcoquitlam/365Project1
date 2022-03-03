@@ -6,17 +6,23 @@ import java.awt.Color;
 import java.awt.Dimension;
 import javax.swing.JPanel;
 
-public class ImagePanel extends JPanel{
+public class ImagePanel extends JPanel {
     private Color[][] colorArray;
     private int dimensionX, dimensionY;
     int step;
 
-    ImagePanel(){
+    ImagePanel() {
         setBorder(BorderFactory.createLineBorder(Color.BLACK));
         setPreferredSize(new Dimension(dimensionX, dimensionY));
     }
 
-    public void repaint(Color[][] input, int w, int h){
+    public void SetSize(int w, int h) {
+        dimensionX = w;
+        dimensionY = h;
+        setPreferredSize(new Dimension(dimensionX, dimensionY));
+    }
+
+    public void repaint(Color[][] input, int w, int h) {
         dimensionX = w;
         dimensionY = h;
         colorArray = input;
@@ -25,12 +31,14 @@ public class ImagePanel extends JPanel{
     }
 
     @Override
-    protected void paintComponent(Graphics g){
+    protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        for(int x = 0; x < dimensionX; x++){
-            for(int y = 0; y < dimensionY; y++){
-                g.setColor(colorArray[x][y]);
-                g.drawLine(x, y, x, y);
+        if (colorArray != null) {
+            for (int x = 0; x < dimensionX; x++) {
+                for (int y = 0; y < dimensionY; y++) {
+                    g.setColor(colorArray[x][y]);
+                    g.drawLine(x, y, x, y);
+                }
             }
         }
     }

@@ -15,6 +15,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.Timer;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.sound.sampled.AudioInputStream;
@@ -34,7 +35,8 @@ public class Project1Frame extends JFrame implements ActionListener {
 
     // Image
     private JButton exitButton, nextButton;
-    private ImagePanel imgPanel;
+    private JPanel imagesPanel;
+    private ImagePanel imgPanel, ditheredPanel;
     private HistogramPanel histogramPanel;
     private int step = 1;
 
@@ -61,6 +63,7 @@ public class Project1Frame extends JFrame implements ActionListener {
         fileButton.addActionListener(this);
 
         panel = new JPanel();
+        JScrollPane scrollPane = new JScrollPane(panel);
         BoxLayout layout = new BoxLayout(panel, BoxLayout.Y_AXIS);
         panel.setLayout(layout);
         panel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
@@ -80,8 +83,18 @@ public class Project1Frame extends JFrame implements ActionListener {
         infoPanel.add(samplingRateLabel);
 
         // Images
+        imagesPanel = new JPanel();
+        imagesPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
         imgPanel = new ImagePanel();
         imgPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        imgPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 20));
+
+        ditheredPanel = new ImagePanel();
+        ditheredPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        imagesPanel.add(imgPanel);
+        imagesPanel.add(ditheredPanel);
 
         histogramPanel = new HistogramPanel();
         histogramPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -99,7 +112,7 @@ public class Project1Frame extends JFrame implements ActionListener {
         controlPanel.add(nextButton);
         controlPanel.add(exitButton);
 
-        this.add(panel, BorderLayout.CENTER);
+        this.add(scrollPane, BorderLayout.CENTER);
         this.pack();
         this.setVisible(true);
     }
@@ -153,10 +166,10 @@ public class Project1Frame extends JFrame implements ActionListener {
         if (e.getSource() == nextButton) {
             if (step == 1) {
                 ditheredColor = MakeDitheredImage(rgbArray);
-                imgPanel.repaint(ditheredColor, img.getWidth(), img.getHeight());
+                ditheredPanel.repaint(ditheredColor, img.getWidth(), img.getHeight());
                 step = 2;
             } else if (step == 2) {
-                imgPanel.repaint(originalColor, img.getWidth(), img.getHeight());
+                ditheredPanel.repaint(null, img.getWidth(), img.getHeight());
                 step = 1;
             }
         }
@@ -228,7 +241,7 @@ public class Project1Frame extends JFrame implements ActionListener {
     // Images
     private void RemoveImageComponents() {
         panel.remove(controlPanel);
-        panel.remove(imgPanel);
+        panel.remove(imagesPanel);
         panel.remove(histogramPanel);
     }
 
@@ -242,9 +255,10 @@ public class Project1Frame extends JFrame implements ActionListener {
             int[][] histograms = CreateHistogramArrays();
 
             imgPanel.repaint(originalColor, width, height);
-            histogramPanel.repaint(histograms, width + 3, 150);
+            ditheredPanel.SetSize(width, height);
+            histogramPanel.repaint(histograms, width*2+13, 150);
 
-            panel.add(imgPanel);
+            panel.add(imagesPanel);
             panel.add(histogramPanel);
             panel.add(controlPanel);
         } catch (Exception ex) {
