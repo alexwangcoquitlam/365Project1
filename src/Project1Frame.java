@@ -255,7 +255,7 @@ public class Project1Frame extends JFrame implements ActionListener {
             int[][] histograms = CreateHistogramArrays();
 
             imgPanel.repaint(originalColor, width, height);
-            ditheredPanel.SetSize(width, height);
+            ditheredPanel.repaint(null, width, height);
             histogramPanel.repaint(histograms, width*2+13, 150);
 
             panel.add(imagesPanel);
